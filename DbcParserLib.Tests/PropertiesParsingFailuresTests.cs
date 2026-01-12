@@ -251,11 +251,13 @@ namespace DbcParserLib.Tests
             uint messageId = 123456;
             var propertyName = "AttributeName";
             var line1 = $"BA_DEF_ BO_ \"{propertyName}\" INT 0 100;";
-            var line2 = $"BA_ \"{propertyName}\" BO_ {messageId} 1.5;";
+            var line2 = $"BA_ \"{propertyName}\" BO_ {messageId} 10.5;";
 
             var observerMock = m_repository.Create<IParseFailureObserver>();
 
-            observerMock.Setup(o => o.PropertySyntaxError());
+            // Now we accept float values for integer properties with a precision loss warning
+            // Convert.ToInt32 uses banker's rounding, so 10.5 rounds to 10
+            observerMock.Setup(o => o.PropertyIntegerValuePrecisionLoss(propertyName, "10.5", 10));
             ParseLine(line1, line2, messageId, observerMock.Object);
         }
 
@@ -265,12 +267,41 @@ namespace DbcParserLib.Tests
             uint messageId = 123456;
             var propertyName = "AttributeName";
             var line1 = $"BA_DEF_ BO_ \"{propertyName}\" HEX 0 100;";
-            var line2 = $"BA_ \"{propertyName}\" BO_ {messageId} 1.5;";
+            var line2 = $"BA_ \"{propertyName}\" BO_ {messageId} 10.5;";
 
             var observerMock = m_repository.Create<IParseFailureObserver>();
 
-            observerMock.Setup(o => o.PropertySyntaxError());
+            // Now we accept float values for hex properties with a precision loss warning
+            // Convert.ToInt32 uses banker's rounding, so 10.5 rounds to 10
+            observerMock.Setup(o => o.PropertyIntegerValuePrecisionLoss(propertyName, "10.5", 10));
             ParseLine(line1, line2, messageId, observerMock.Object);
+        }
+
+        [Test]
+        public void DefaultCustomPropertyIntegerWithWholeNumberFloatValueDoesNotWarn()
+        {
+            uint messageId = 123456;
+            var propertyName = "AttributeName";
+            var line1 = $"BA_DEF_ BO_ \"{propertyName}\" INT 0 100;";
+            var line2 = $"BA_ \"{propertyName}\" BO_ {messageId} 10.0;";
+
+            var observerMock = m_repository.Create<IParseFailureObserver>();
+
+            // No warning should be raised for whole number float values (10.0)
+            ParseLine(line1, line2, messageId, observerMock.Object);
+            
+            // Build and verify the value was parsed correctly
+            var nextLineProviderMock = m_repository.Create<INextLineProvider>();
+            var dbcBuilder = new DbcBuilder(observerMock.Object);
+            dbcBuilder.AddMessage(new Message() { ID = messageId });
+            
+            var definitionLineParser = new PropertiesDefinitionLineParser(observerMock.Object);
+            var lineParser = new PropertiesLineParser(observerMock.Object);
+            definitionLineParser.TryParse(line1, dbcBuilder, nextLineProviderMock.Object);
+            lineParser.TryParse(line2, dbcBuilder, nextLineProviderMock.Object);
+            
+            var dbc = dbcBuilder.Build();
+            Assert.That(dbc.Messages.First().CustomProperties[propertyName].IntegerCustomProperty.Value, Is.EqualTo(10));
         }
 
         [Test]

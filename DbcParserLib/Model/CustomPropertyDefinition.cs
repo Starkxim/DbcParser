@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Globalization;
 using System.Linq;
 using DbcParserLib.Observers;
 
@@ -65,23 +66,48 @@ namespace DbcParserLib.Model
                 return false;
             }
 
-            if (!int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture,
+            // Try parsing as integer first
+            if (int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture,
                     out integerValue))
             {
-                m_observer.PropertySyntaxError();
-                return false;
-            }
+                if (CanAcceptAllValue(CustomPropertyDataType.Integer))
+                    return true;
 
-            if (CanAcceptAllValue(CustomPropertyDataType.Integer))
+                if (integerValue < IntegerCustomProperty.Minimum || integerValue > IntegerCustomProperty.Maximum)
+                {
+                    m_observer.PropertyValueOutOfBound(Name, value);
+                    return false;
+                }
+
                 return true;
-
-            if (integerValue < IntegerCustomProperty.Minimum || integerValue > IntegerCustomProperty.Maximum)
-            {
-                m_observer.PropertyValueOutOfBound(Name, value);
-                return false;
             }
 
-            return true;
+            // If integer parsing fails, try parsing as double to support "loose mode"
+            // This handles cases where a float value is provided for an integer property
+            if (double.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out var doubleValue))
+            {
+                integerValue = Convert.ToInt32(doubleValue);
+                
+                // Warn if precision is lost during conversion
+                if (Math.Abs(doubleValue - integerValue) > double.Epsilon)
+                {
+                    m_observer.PropertyIntegerValuePrecisionLoss(Name, value, integerValue);
+                }
+
+                if (CanAcceptAllValue(CustomPropertyDataType.Integer))
+                    return true;
+
+                if (integerValue < IntegerCustomProperty.Minimum || integerValue > IntegerCustomProperty.Maximum)
+                {
+                    m_observer.PropertyValueOutOfBound(Name, value);
+                    return false;
+                }
+
+                return true;
+            }
+
+            m_observer.PropertySyntaxError();
+            return false;
         }
 
         internal bool TryGetHexValue(string value, bool isNumeric, out int hexValue)
@@ -93,23 +119,48 @@ namespace DbcParserLib.Model
                 return false;
             }
 
-            if (!int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture,
+            // Try parsing as integer first
+            if (int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture,
                     out hexValue))
             {
-                m_observer.PropertySyntaxError();
-                return false;
-            }
+                if (CanAcceptAllValue(CustomPropertyDataType.Hex))
+                    return true;
 
-            if (CanAcceptAllValue(CustomPropertyDataType.Hex))
+                if (hexValue < HexCustomProperty.Minimum || hexValue > HexCustomProperty.Maximum)
+                {
+                    m_observer.PropertyValueOutOfBound(Name, value);
+                    return false;
+                }
+
                 return true;
-
-            if (hexValue < HexCustomProperty.Minimum || hexValue > HexCustomProperty.Maximum)
-            {
-                m_observer.PropertyValueOutOfBound(Name, value);
-                return false;
             }
 
-            return true;
+            // If integer parsing fails, try parsing as double to support "loose mode"
+            // This handles cases where a float value is provided for a hex property
+            if (double.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out var doubleValue))
+            {
+                hexValue = Convert.ToInt32(doubleValue);
+                
+                // Warn if precision is lost during conversion
+                if (Math.Abs(doubleValue - hexValue) > double.Epsilon)
+                {
+                    m_observer.PropertyIntegerValuePrecisionLoss(Name, value, hexValue);
+                }
+
+                if (CanAcceptAllValue(CustomPropertyDataType.Hex))
+                    return true;
+
+                if (hexValue < HexCustomProperty.Minimum || hexValue > HexCustomProperty.Maximum)
+                {
+                    m_observer.PropertyValueOutOfBound(Name, value);
+                    return false;
+                }
+
+                return true;
+            }
+
+            m_observer.PropertySyntaxError();
+            return false;
         }
 
         internal bool TryGetFloatValue(string value, bool isNumeric, out float floatValue)

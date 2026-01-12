@@ -132,6 +132,10 @@ namespace DbcParserLib.Observers
         {
         }
 
+        public void PropertyIntegerValuePrecisionLoss(string propertyName, string originalValue, int convertedValue)
+        {
+        }
+
         public void ExtraMessageTransmittersSyntaxError()
         {
         }
