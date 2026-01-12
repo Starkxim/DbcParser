@@ -89,7 +89,8 @@ namespace DbcParserLib.Model
                 integerValue = Convert.ToInt32(doubleValue);
                 
                 // Warn if precision is lost during conversion
-                if (Math.Abs(doubleValue - integerValue) > double.Epsilon)
+                // Check if the double value has a fractional part
+                if (doubleValue != Math.Floor(doubleValue))
                 {
                     m_observer.PropertyIntegerValuePrecisionLoss(Name, value, integerValue);
                 }
@@ -142,7 +143,8 @@ namespace DbcParserLib.Model
                 hexValue = Convert.ToInt32(doubleValue);
                 
                 // Warn if precision is lost during conversion
-                if (Math.Abs(doubleValue - hexValue) > double.Epsilon)
+                // Check if the double value has a fractional part
+                if (doubleValue != Math.Floor(doubleValue))
                 {
                     m_observer.PropertyIntegerValuePrecisionLoss(Name, value, hexValue);
                 }
