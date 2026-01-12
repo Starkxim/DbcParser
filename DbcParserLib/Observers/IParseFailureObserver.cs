@@ -36,6 +36,7 @@
         void TableMapNameNotFound(string tableName);
         void PropertyValueOutOfBound(string propertyName, string value);
         void PropertyValueOutOfIndex(string propertyName, string index);
+        void PropertyIntegerValuePrecisionLoss(string propertyName, string originalValue, int convertedValue);
         void ExtraMessageTransmittersSyntaxError();
         void ExtraMessageTransmittersDuplicate(uint messageId, string duplicateTransmitter);
         void SignalExtendedMultiplexingSyntaxError();

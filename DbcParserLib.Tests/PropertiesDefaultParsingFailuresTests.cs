@@ -152,7 +152,9 @@ namespace DbcParserLib.Tests
 
             var observerMock = m_repository.Create<IParseFailureObserver>();
 
-            observerMock.Setup(o => o.PropertySyntaxError());
+            // Now we accept float values for integer properties with a precision loss warning
+            // Convert.ToInt32 uses banker's rounding, so 1.5 rounds to 2
+            observerMock.Setup(o => o.PropertyIntegerValuePrecisionLoss(propertyName, "1.5", 2));
             ParseLine(line1, line2, observerMock.Object);
         }
 
@@ -165,7 +167,9 @@ namespace DbcParserLib.Tests
 
             var observerMock = m_repository.Create<IParseFailureObserver>();
 
-            observerMock.Setup(o => o.PropertySyntaxError());
+            // Now we accept float values for hex properties with a precision loss warning
+            // Convert.ToInt32 uses banker's rounding, so 1.5 rounds to 2
+            observerMock.Setup(o => o.PropertyIntegerValuePrecisionLoss(propertyName, "1.5", 2));
             ParseLine(line1, line2, observerMock.Object);
         }
 

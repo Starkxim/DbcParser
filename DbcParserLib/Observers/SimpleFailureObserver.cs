@@ -174,6 +174,11 @@ namespace DbcParserLib.Observers
             AddError($"Out of index value [{index}] for '{propertyName}' property");
         }
 
+        public void PropertyIntegerValuePrecisionLoss(string propertyName, string originalValue, int convertedValue)
+        {
+            AddError($"Precision loss for '{propertyName}' property: value [{originalValue}] rounded to [{convertedValue}]");
+        }
+
         public void ExtraMessageTransmittersSyntaxError()
         {
             AddError("[BO_TX_BU_] Extra message transmitters syntax error");
