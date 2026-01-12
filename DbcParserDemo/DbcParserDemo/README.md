@@ -38,7 +38,7 @@ To build a standalone executable for Windows:
 dotnet publish -c Release -r win-x64 --self-contained
 ```
 
-The executable will be in `bin/Release/net10.0/win-x64/publish/DbcParserDemo.exe`
+The executable will be in `bin/Release/net8.0/win-x64/publish/DbcParserDemo.exe`
 
 You can also build for other platforms:
 - `win-x86` - 32-bit Windows
@@ -142,7 +142,7 @@ The parser will accept this (loose mode) but display:
 
 ## Requirements
 
-- .NET 8.0 or later (can be adjusted in the .csproj file)
+- .NET 8.0 or later
 - DbcParserLib reference
 
 ## Related Files
