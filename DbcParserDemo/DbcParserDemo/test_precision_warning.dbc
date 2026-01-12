@@ -1,0 +1,58 @@
+VERSION ""
+
+NS_ : 
+	NS_DESC_
+	CM_
+	BA_DEF_
+	BA_
+	VAL_
+	CAT_DEF_
+	CAT_
+	FILTER
+	BA_DEF_DEF_
+	EV_DATA_
+	ENVVAR_DATA_
+	SGTYPE_
+	SGTYPE_VAL_
+	BA_DEF_SGTYPE_
+	BA_SGTYPE_
+	SIG_TYPE_REF_
+	VAL_TABLE_
+	SIG_GROUP_
+	SIG_VALTYPE_
+	SIGTYPE_VALTYPE_
+	BO_TX_BU_
+	BA_DEF_REL_
+	BA_REL_
+	BA_SGTYPE_REL_
+	SG_MUL_VAL_
+
+BS_:
+
+BU_: TestNode Vector__XXX
+
+BO_ 100 TestMessage: 8 TestNode
+ SG_ TestSignal : 0|16@1+ (1,0) [0|65535] "" Vector__XXX
+ SG_ SpeedSignal : 16|16@1+ (0.01,0) [0|655.35] "km/h" Vector__XXX
+
+BO_ 200 AnotherMessage: 4 Vector__XXX
+ SG_ TempSignal : 0|8@1+ (0.5,-40) [-40|87.5] "degC" Vector__XXX
+
+CM_ BO_ 100 "Test message with precision loss warning demo";
+CM_ SG_ 100 TestSignal "A test signal";
+CM_ SG_ 100 SpeedSignal "Vehicle speed signal";
+
+BA_DEF_ BO_ "GenMsgCycleTime" INT 0 10000;
+BA_DEF_ BO_ "GenMsgDelayTime" INT 0 1000;
+BA_DEF_ SG_ "GenSigStartValue" FLOAT 0 1000;
+
+BA_DEF_DEF_ "GenMsgCycleTime" 0;
+BA_DEF_DEF_ "GenMsgDelayTime" 0;
+BA_DEF_DEF_ "GenSigStartValue" 0;
+
+BA_ "GenMsgCycleTime" BO_ 100 100.5;
+BA_ "GenMsgDelayTime" BO_ 100 50.75;
+BA_ "GenMsgCycleTime" BO_ 200 200.0;
+BA_ "GenSigStartValue" SG_ 100 TestSignal 10.5;
+
+VAL_ 100 TestSignal 0 "Off" 1 "On" 2 "Error";

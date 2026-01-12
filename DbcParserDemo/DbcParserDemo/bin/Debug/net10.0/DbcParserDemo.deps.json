@@ -1,0 +1,39 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v10.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v10.0": {
+      "DbcParserDemo/1.0.0": {
+        "dependencies": {
+          "DbcParserLib": "1.8.0"
+        },
+        "runtime": {
+          "DbcParserDemo.dll": {}
+        }
+      },
+      "DbcParserLib/1.8.0": {
+        "runtime": {
+          "DbcParserLib.dll": {
+            "assemblyVersion": "1.8.0.0",
+            "fileVersion": "1.8.0.0"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "DbcParserDemo/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "DbcParserLib/1.8.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}
